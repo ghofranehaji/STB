@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>STB Bank - Modèle Clustering</title>
+    <meta name="description" content="Visualisations des modèles de clustering pour la banque STB" />
+    <meta property="og:title" content="STB Bank - Modèle Clustering" />
+    <meta property="og:description" content="Résultats des algorithmes de clustering DBSCAN, K-Means et hiérarchique" />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="C:\Users\Ayoub Hajji\Desktop\stbbank\bank.css"
+    />
+    <style>
+      /* Styles généraux */
+      body {
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f7fa;
+      }
+      
+      /* Page d'introduction */
+      .intro-page {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        text-align: center;
+        padding: 2rem;
+        background-color: white;
+      }
+      
+      .intro-content {
+        max-width: 600px;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        background-color: #ffffff;
+      }
+      
+      .intro-title {
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: #103962;
+        margin-bottom: 1.5rem;
+      }
+      
+      .intro-text {
+        font-size: 1.1rem;
+        color: #4b5563;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+      }
+      
+      .start-button {
+        background-color: #103962;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      
+      .start-button:hover {
+        background-color: #0d2b4e;
+      }
+      
+      /* Styles pour la page de clustering (masquée par défaut) */
+      .clustering-page {
+        display: none;
+      }
+      
+      /* Tabs Specific Styles */
+      .tabs {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .tabs-list {
+        display: flex;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        margin-bottom: 1.5rem;
+        overflow-x: auto;
+      }
+
+      .tab-trigger {
+        padding: 0.5rem 1rem;
+        background: transparent;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+        border-bottom: 2px solid transparent;
+      }
+
+      .tab-trigger.active {
+        background-color: white;
+        color: #103962;
+        border-bottom: 2px solid white;
+        border-top-left-radius: 0.25rem;
+        border-top-right-radius: 0.25rem;
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .algorithm-content {
+        background-color: white;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        border: 1px solid #103962;
+        min-height: 500px;
+        color: #103962;
+      }
+
+      /* Style pour l'iframe */
+      .streamlit-iframe {
+        width: 100%;
+        height: 500px;
+        border: none;
+        border-radius: 0.5rem;
+        background: white;
+      }
+      
+      /* Header */
+      .header {
+        background-color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 10;
+      }
+      
+      /* Footer */
+      .footer {
+        background-color: white;
+        border-top: 1px solid #103962;
+        padding: 1rem 0;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+      <div id="root">
+      <!-- Header -->
+      <header class="bg-white text-primary shadow-md fixed top-0 w-full z-10">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+          <div class="flex items-center justify-center w-full md:w-auto">
+            <a href="/" class="flex items-center space-x-2 cursor-pointer">
+              <img src="C:\Users\Ayoub Hajji\Desktop\stbbank\final logo stb.png" alt="STB Bank Logo" class="h-10" />
+            </a>
+          </div>
+
+          <nav class="hidden md:flex items-center space-x-4">
+            <a href="C:\Users\Ayoub Hajji\Desktop\stbbank\index.html">
+              <button class="btn btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1.5 h-4 w-4">
+                  <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                Accueil
+              </button>
+            </a>
+
+            <a href="C:\Users\Ayoub Hajji\Desktop\stbbank\bankdashbord.html">
+              <button class="btn btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1.5 h-4 w-4">
+                  <rect width="7" height="9" x="3" y="3" rx="1"></rect>
+                  <rect width="7" height="5" x="14" y="3" rx="1"></rect>
+                  <rect width="7" height="9" x="14" y="12" rx="1"></rect>
+                  <rect width="7" height="5" x="3" y="16" rx="1"></rect>
+                </svg>
+                Tableau de bord
+              </button>
+            </a>
+          </nav>
+        </div>
+      </header>
+    <div id="root">
+      <!-- Page d'introduction -->
+      <div class="intro-page" id="introPage">
+        <div class="intro-content">
+          <h1 class="intro-title">Modèles de Clustering STB Bank</h1>
+          <p class="intro-text">
+            Remarque: La meilleure résultat de segmentation est la résultat de l'algorithme 
+            Clustering Hiérarchique 0.8219. Tandis que le K-Means a obtenu un résultat 
+            de 0.8207.
+          </p>
+          <button class="start-button" id="startButton">Passer à segmenter</button>
+        </div>
+      </div>
+
+
+      <!-- Page de clustering (masquée initialement) -->
+      <div class="clustering-page" id="clusteringPage">
+        <!-- Header -->
+       
+
+        <!-- Main Content -->
+        <main class="flex-grow container mx-auto px-4 pt-24 pb-12">
+          <!-- Clustering Page -->
+          <section class="mt-8">
+            <div class="card-dashboard">
+              <div class="card-dashboard-content">
+                <h2 class="text-2xl font-medium text-white mb-6 border-b border-white/30 pb-3">
+                  Modèle Clustering
+                </h2>
+
+                <div class="tabs">
+                  <div class="tabs-list">
+                    <button class="tab-trigger active" data-tab="kmeans">
+                      K-Means
+                    </button>
+                    <button class="tab-trigger" data-tab="hierarchical">
+                      Clustering Hiérarchique
+                    </button>
+                  </div>
+
+                  <div class="tab-content active" id="tab-kmeans">
+                    <div class="algorithm-content">
+                      <iframe 
+                        src="http://localhost:8502" 
+                        class="streamlit-iframe"
+                        title="Application de clustering K-Means"
+                      ></iframe>
+                    </div>
+                  </div>
+
+                  <div class="tab-content" id="tab-hierarchical">
+                    <div class="algorithm-content">
+                      <iframe 
+                        src="http://localhost:8501" 
+                        class="streamlit-iframe"
+                        title="Application de clustering Hiérarchique"
+                      ></iframe>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+          <div class="container mx-auto px-4 text-center">
+            <p>© 2025 Banque STB. Tous droits réservés.</p>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Gestion du bouton "Passer à segmenter"
+        const startButton = document.getElementById('startButton');
+        const introPage = document.getElementById('introPage');
+        const clusteringPage = document.getElementById('clusteringPage');
+        
+        startButton.addEventListener('click', function() {
+          introPage.style.display = 'none';
+          clusteringPage.style.display = 'block';
+        });
+        
+        // Tabs functionality
+        const tabTriggers = document.querySelectorAll(".tab-trigger");
+        const tabContents = document.querySelectorAll(".tab-content");
+
+        tabTriggers.forEach((trigger) => {
+          trigger.addEventListener("click", function () {
+            // Remove active class from all triggers and contents
+            tabTriggers.forEach((t) => t.classList.remove("active"));
+            tabContents.forEach((c) => c.classList.remove("active"));
+
+            // Add active class to clicked trigger
+            this.classList.add("active");
+
+            // Show corresponding content
+            const tabId = "tab-" + this.getAttribute("data-tab");
+            document.getElementById(tabId).classList.add("active");
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
